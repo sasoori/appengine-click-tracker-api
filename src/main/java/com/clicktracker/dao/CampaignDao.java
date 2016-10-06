@@ -5,7 +5,6 @@ import com.clicktracker.entity.Platform;
 import java.sql.SQLException;
 import java.util.List;
 
-
 public interface CampaignDao{
 
     Long createCampaign(String name, String referral, List<Platform> platforms) throws Exception;

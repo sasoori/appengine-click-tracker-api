@@ -73,10 +73,13 @@ public class CampaignRestService {
     public Response getCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
+        // Find campaign by id
         Campaign campaign = dao.readCampaign(campaignId, true);
+        // Campaign wasn't found, return 404;
         if (campaign == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        // Turn campaign object to json and return it to client
         String campaignInJson;
         campaignInJson = mapper.writeValueAsString(campaign);
         return Response.status(Response.Status.OK).entity(campaignInJson).build();
@@ -91,11 +94,13 @@ public class CampaignRestService {
             String campaignJson,
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
+        // Convert request body to Campaign object
         Campaign campaign = mapper.readValue(campaignJson, Campaign.class);
-        // check if campaign exists first
+        // Check if campaign exists first if not send 404 status
         if (dao.readCampaign(campaignId, false) == null) {
-            return Response.status(Response.Status.NOT_FOUND).type("text/plain").entity("Campaign doesn't exists").build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+        // Campaign was found now update it
         dao.updateCampaign(campaign);
         return Response.status(Response.Status.OK).build();
     }
@@ -107,7 +112,8 @@ public class CampaignRestService {
     public Response deleteCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
-            dao.deleteCampaign(campaignId);
+        // Delete campaign by id
+        dao.deleteCampaign(campaignId);
         return Response.status(Response.Status.OK).build();
     }
 
@@ -116,9 +122,10 @@ public class CampaignRestService {
     @Path("/campaigns")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCampaigns(
-           @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
+            @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
     ) throws Exception {
         String campaignInJson;
+        // List all existing campaigns available on given platform and convert list into json
         campaignInJson = mapper.writeValueAsString(dao.getCampaigns(platforms));
         return Response.status(Response.Status.OK).entity(campaignInJson).build();
     }

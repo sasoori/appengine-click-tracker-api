@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
-
+// On server init, check if table exists, if not create one
 @WebListener
 public class ClickTracker implements ServletContextListener {
     private static final Logger logger = Logger.getLogger(CampaignRestService.class.getName());

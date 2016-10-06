@@ -28,15 +28,15 @@ public class DatabaseDao implements CampaignDao {
     private static final Logger logger = Logger.getLogger(CampaignRestService.class.getName());
     private static final CampaignDao dao = new DatabaseDao();
 
+    // Inject driver for MySQL connector
     public DatabaseDao() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
-
+    // Create new campaign and save it to datastore
     @Override
     public Long createCampaign(String name, String referral, List<Platform> platforms) throws Exception {
         try {
@@ -53,10 +53,9 @@ public class DatabaseDao implements CampaignDao {
             return null;
         }
     }
-
+    // Execute query and search for campaign by id. On match convert it to campaign object
     @Override
     public Campaign readCampaign(Long campaignId, Boolean countClicks) throws SQLException {
-        //Find campaign by id
         Query q = new Query().setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.EQUAL, KeyFactory.createKey("Campaign", campaignId)));
         PreparedQuery pq = datastore.prepare(q);
         Entity result = pq.asSingleEntity();
@@ -66,7 +65,7 @@ public class DatabaseDao implements CampaignDao {
         }
         return campaign;
     }
-
+    // Update/overwrite campaign
     @Override
     public void updateCampaign(Campaign campaign) throws Exception {
         Key campaignKey = KeyFactory.createKey("Campaign", campaign.getId());
@@ -76,13 +75,13 @@ public class DatabaseDao implements CampaignDao {
         campaignEntity.setProperty("platforms", Platform.enumListToStringList(campaign.getPlatforms()));
         datastore.put(campaignEntity);
     }
-
+    // Create key from id and then delete campaign
     @Override
     public void deleteCampaign(Long campaignId) throws SQLException {
         Key campaignKey = KeyFactory.createKey("Campaign", campaignId);
         datastore.delete(campaignKey);
     }
-
+    // First verify if campaign exists and then add click to database
     @Override
     public Campaign trackClick(Long campaignId) throws SQLException {
         Campaign campaign = dao.readCampaign(campaignId, false);
@@ -96,7 +95,7 @@ public class DatabaseDao implements CampaignDao {
         }
         return null;
     }
-
+    // Get clicks for specific campaign by querying entries that are marked with campaign id
     @Override
     public Long countClicks(Long campaignId) throws SQLException {
         Long totalClicks = 0L;
@@ -112,7 +111,7 @@ public class DatabaseDao implements CampaignDao {
         }
         return totalClicks;
     }
-
+    // Search for campaigns on given platform
     @Override
     public List<Campaign> getCampaigns(List<Platform> platforms) throws Exception {
         Query q = new Query("Campaign");
@@ -127,7 +126,7 @@ public class DatabaseDao implements CampaignDao {
         }
         return campaigns;
     }
-
+    // Convert entity object to campaign
     private Campaign entityToCampaign(Entity entity, Boolean countClicks) throws SQLException {
         Campaign campaign = new Campaign();
         campaign.setId(entity.getKey().getId());
