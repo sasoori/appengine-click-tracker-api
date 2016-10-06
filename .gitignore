@@ -1,0 +1,7 @@
+.idea/
+.metadata/
+.settings/
+lib/
+click-tracker.eml
+nbactions.xml
+target/
