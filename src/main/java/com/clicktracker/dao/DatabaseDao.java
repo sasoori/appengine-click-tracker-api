@@ -21,18 +21,8 @@ public class DatabaseDao implements CampaignDao {
     public DatabaseDao() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            String sqlCreate = "CREATE TABLE IF NOT EXISTS `clicks` (\n" +
-                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                    "  `campaign_id` bigint(20) DEFAULT NULL,\n" +
-                    "  `click_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
-                    "  PRIMARY KEY (`id`),\n" +
-                    "  UNIQUE KEY `id_UNIQUE` (`id`)\n" +
-                    ")";
-            Connection conn = DriverManager.getConnection(Constants.SqlUrl);
-            Statement stateManager = conn.createStatement();
-            stateManager.execute(sqlCreate);
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

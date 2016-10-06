@@ -52,8 +52,8 @@ public class CampaignRestService {
             @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
     ) throws Exception {
 
-        long campaignId = dao.createCampaign(name, referral, platforms);
-        if (campaignId == 0) {
+        Long campaignId = dao.createCampaign(name, referral, platforms);
+        if (campaignId == null) {
             return Response.status(Response.Status.BAD_REQUEST).type("text/plain").entity("Failed to save campaign").build();
         }
         return Response.status(200).entity(campaignId).build();
@@ -83,8 +83,9 @@ public class CampaignRestService {
     @Path("/campaign/update/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateCampaign(String campaignJson,
-               @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
+    public Response updateCampaign(
+            String campaignJson,
+            @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
         Campaign campaign = mapper.readValue(campaignJson, Campaign.class);
         // check if campaign exists first
@@ -102,13 +103,13 @@ public class CampaignRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
-    ){
+    ) {
         try {
             dao.deleteCampaign(campaignId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Response.status(200).entity(campaignId).build();
+        return Response.status(200).build();
     }
 
     // GET CAMPAIGNS
