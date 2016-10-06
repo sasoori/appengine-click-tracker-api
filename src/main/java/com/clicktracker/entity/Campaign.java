@@ -1,6 +1,7 @@
 package com.clicktracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 import java.util.List;
 
 public class Campaign {
@@ -15,26 +16,29 @@ public class Campaign {
     private List<Platform> platforms;
     @JsonProperty
     private Long adClicks;
+    @JsonProperty
+    private Date created;
 
     public Campaign() {}
 
-    public Campaign(Long id, String name, String referral, List<Platform> platforms, Long adClicks) {
+    public Campaign(Long id, String name, String referral, List<Platform> platforms, Long adClicks, Date created) {
         this.id = id;
         this.name = name;
         this.referral = referral;
         this.platforms = platforms;
         this.adClicks = adClicks;
+        this.created = created;
     }
-
-    public Campaign(Long id, String name, String referral, List<Platform> platforms) {
+    public Campaign(Long id, String name, String referral, List<Platform> platforms, Date created) {
         this.id = id;
         this.name = name;
         this.referral = referral;
         this.platforms = platforms;
+        this.created = created;
     }
 
     public String toString() {
-        return "id: " + id + "\ncampaign name: " + name + "\nreferral: " + referral + "\nplatforms: " +  platforms + "\nadClicks: " + adClicks;
+        return "\nid: " + id + "\ncampaign name: " + name + "\nreferral: " + referral + "\nplatforms: " +  platforms + "\nadClicks: " + adClicks + "\ncreated: " + created;
     }
 
     public Long getId() {
@@ -67,6 +71,14 @@ public class Campaign {
 
     public void setPlatforms(List<Platform> platforms) {
         this.platforms = platforms;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public Long getAdClicks() {

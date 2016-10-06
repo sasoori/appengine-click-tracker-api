@@ -7,11 +7,18 @@ import com.clicktracker.dao.DatabaseDao;
 import com.clicktracker.utils.RequestParams;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,8 +45,8 @@ public class CampaignRestService {
         }
         // returns 301 https://support.google.com/webmasters/answer/93633?hl=en&ref_topic=6001951
         return Response.status(Response.Status.MOVED_PERMANENTLY).location(location).build();
-        // return Response.status(200).build();
     }
+    // ADMIN SECTION
 
     // CREATE CAMPAIGN
     @POST
@@ -51,7 +58,6 @@ public class CampaignRestService {
             @QueryParam(RequestParams.REFERRAL) String referral,
             @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
     ) throws Exception {
-
         Long campaignId = dao.createCampaign(name, referral, platforms);
         if (campaignId == null) {
             return Response.status(Response.Status.BAD_REQUEST).type("text/plain").entity("Failed to save campaign").build();
@@ -67,14 +73,12 @@ public class CampaignRestService {
     public Response getCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
-
         Campaign campaign = dao.readCampaign(campaignId, true);
         if (campaign == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         String campaignInJson;
         campaignInJson = mapper.writeValueAsString(campaign);
-
         return Response.status(Response.Status.OK).entity(campaignInJson).build();
     }
 
@@ -93,8 +97,7 @@ public class CampaignRestService {
             return Response.status(Response.Status.NOT_FOUND).type("text/plain").entity("Campaign doesn't exists").build();
         }
         dao.updateCampaign(campaign);
-
-        return Response.status(200).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     // DELETE CAMPAIGN
@@ -103,21 +106,20 @@ public class CampaignRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
-    ) {
-        try {
+    ) throws Exception {
             dao.deleteCampaign(campaignId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Response.status(200).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     // GET CAMPAIGNS
+    @GET
     @Path("/campaigns")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCampaigns(
-            @QueryParam(RequestParams.CAMPAIGN_ID) Long campaignId
+           @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
     ) throws Exception {
-        return null;
+        String campaignInJson;
+        campaignInJson = mapper.writeValueAsString(dao.getCampaigns(platforms));
+        return Response.status(Response.Status.OK).entity(campaignInJson).build();
     }
 }

@@ -20,6 +20,7 @@ public interface CampaignDao{
 
     Long countClicks(Long campaignId) throws SQLException;
 
+    List<Campaign>getCampaigns(List<Platform> platforms) throws Exception;
 }
 
 

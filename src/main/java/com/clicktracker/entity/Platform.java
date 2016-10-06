@@ -1,12 +1,9 @@
 
 package com.clicktracker.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Platform {
     IPHONE,
     ANDROID;

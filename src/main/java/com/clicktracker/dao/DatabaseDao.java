@@ -4,13 +4,23 @@ import com.clicktracker.entity.Campaign;
 import com.clicktracker.entity.Platform;
 import com.clicktracker.rest.CampaignRestService;
 import com.clicktracker.utils.Constants;
-import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-import java.sql.*;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 public class DatabaseDao implements CampaignDao {
 
@@ -47,15 +57,12 @@ public class DatabaseDao implements CampaignDao {
     @Override
     public Campaign readCampaign(Long campaignId, Boolean countClicks) throws SQLException {
         //Find campaign by id
-        Query.Filter keyFilter = new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.EQUAL, KeyFactory.createKey("Campaign", campaignId));
-        Query q = new Query().setFilter(keyFilter);
-        List<Entity> results = datastore.prepare(q).asList(FetchOptions.Builder.withDefaults());
+        Query q = new Query().setFilter(new Query.FilterPredicate(Entity.KEY_RESERVED_PROPERTY, Query.FilterOperator.EQUAL, KeyFactory.createKey("Campaign", campaignId)));
+        PreparedQuery pq = datastore.prepare(q);
+        Entity result = pq.asSingleEntity();
         Campaign campaign = null;
-        for (Entity campaignEntity : results) {
-            campaign = new Campaign(campaignEntity.getKey().getId(), (String) campaignEntity.getProperty("name"), (String) campaignEntity.getProperty("referral"), (List<Platform>) campaignEntity.getProperty("platforms"));
-        }
-        if (countClicks && campaign != null) {
-            campaign.setAdClicks(dao.countClicks(campaign.getId()));
+        if (result != null) {
+            campaign = entityToCampaign(result, countClicks);
         }
         return campaign;
     }
@@ -105,4 +112,34 @@ public class DatabaseDao implements CampaignDao {
         }
         return totalClicks;
     }
+
+    @Override
+    public List<Campaign> getCampaigns(List<Platform> platforms) throws Exception {
+        Query q = new Query("Campaign");
+        if (!platforms.isEmpty()) {
+            q.setFilter(new Query.FilterPredicate("platforms", Query.FilterOperator.IN, Platform.enumListToStringList(platforms)));
+        }
+
+        PreparedQuery pq = datastore.prepare(q);
+        List<Campaign> campaigns = new ArrayList<>();
+        for (Entity result : pq.asIterable()) {
+            campaigns.add(entityToCampaign(result, true));
+        }
+        return campaigns;
+    }
+
+    private Campaign entityToCampaign(Entity entity, Boolean countClicks) throws SQLException {
+        Campaign campaign = new Campaign();
+        campaign.setId(entity.getKey().getId());
+        campaign.setName((String) entity.getProperty("name"));
+        campaign.setReferral((String) entity.getProperty("referral"));
+        List<String> platformStringList = (List<String>) entity.getProperty("platforms");
+        campaign.setPlatforms(Platform.stringListToEnumList(platformStringList));
+        campaign.setCreated((Date) entity.getProperty("created"));
+        if (countClicks) {
+            campaign.setAdClicks(dao.countClicks(entity.getKey().getId()));
+        }
+        return campaign;
+    }
+
 }

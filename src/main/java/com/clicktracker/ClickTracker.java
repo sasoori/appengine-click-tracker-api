@@ -2,7 +2,6 @@ package com.clicktracker;
 
 import com.clicktracker.rest.CampaignRestService;
 import com.clicktracker.utils.Constants;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -20,7 +19,7 @@ public class ClickTracker implements ServletContextListener {
         String sqlCreate = "CREATE TABLE IF NOT EXISTS `clicks` (\n" +
                 "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                 "  `campaign_id` bigint(20) DEFAULT NULL,\n" +
-                "  `click_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
+                "  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
                 "  PRIMARY KEY (`id`),\n" +
                 "  UNIQUE KEY `id_UNIQUE` (`id`)\n" +
                 ")";
