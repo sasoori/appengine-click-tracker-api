@@ -35,7 +35,6 @@ public class CampaignRestService {
     public Response findCampaign(
             @QueryParam(RequestParams.CAMPAIGN_ID) Long campaignId
     ) throws Exception {
-
         Campaign campaign = dao.trackClick(campaignId);
         URI location;
         if (campaign == null) {
@@ -46,11 +45,12 @@ public class CampaignRestService {
         // returns 301 https://support.google.com/webmasters/answer/93633?hl=en&ref_topic=6001951
         return Response.status(Response.Status.MOVED_PERMANENTLY).location(location).build();
     }
-    // ADMIN SECTION
-
+    /* ADMIN SECTION
+     * IMPORTANT: This section would be under authentication(e.g., Apache Shiro)
+     */
     // CREATE CAMPAIGN
     @POST
-    @Path("/campaign/create")
+    @Path("/campaigns")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCampaign(
@@ -64,10 +64,9 @@ public class CampaignRestService {
         }
         return Response.status(200).entity(campaignId).build();
     }
-
     // GET CAMPAIGN
     @GET
-    @Path("/campaign/{id}")
+    @Path("/campaigns/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCampaign(
@@ -84,10 +83,9 @@ public class CampaignRestService {
         campaignInJson = mapper.writeValueAsString(campaign);
         return Response.status(Response.Status.OK).entity(campaignInJson).build();
     }
-
     // EDIT CAMPAIGN
     @PUT
-    @Path("/campaign/update/{id}")
+    @Path("/campaigns/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCampaign(
@@ -104,10 +102,9 @@ public class CampaignRestService {
         dao.updateCampaign(campaign);
         return Response.status(Response.Status.OK).build();
     }
-
     // DELETE CAMPAIGN
     @DELETE
-    @Path("/campaign/delete/{id}")
+    @Path("/campaigns/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCampaign(
             @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
@@ -116,7 +113,6 @@ public class CampaignRestService {
         dao.deleteCampaign(campaignId);
         return Response.status(Response.Status.OK).build();
     }
-
     // GET CAMPAIGNS
     @GET
     @Path("/campaigns")

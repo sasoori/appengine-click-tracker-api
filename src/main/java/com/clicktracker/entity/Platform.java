@@ -16,7 +16,6 @@ public enum Platform {
         return platform.toString();
     }
 
-
     public static List<String> enumListToStringList(List<Platform> platforms) {
         if (platforms == null) {
             return null;
@@ -27,6 +26,7 @@ public enum Platform {
         }
         return enumList;
     }
+
     public static List<Platform> stringListToEnumList(List<String> platforms) {
         if (platforms == null) {
             return null;

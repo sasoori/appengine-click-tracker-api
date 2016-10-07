@@ -9,7 +9,7 @@ API that tracks your custom links and stores information about each click in dat
 * Java JDK 7
 * Apache Maven
 * Google App Engine SDK.
-
+* MySQL
 
 
 ## Installation
@@ -20,7 +20,7 @@ API that tracks your custom links and stores information about each click in dat
 
 For development run command:
 
-```$ mvn appengine:development```
+```$ mvn appengine:devserver```
 
 ## Deploying
 

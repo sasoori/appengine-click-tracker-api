@@ -1,6 +1,11 @@
 package com.clicktracker.entity;
 
+import com.clicktracker.dao.CampaignDao;
+import com.clicktracker.dao.DatabaseDao;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.appengine.api.datastore.Entity;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +24,8 @@ public class Campaign {
     @JsonProperty
     private Date created;
 
-    public Campaign() {}
+    public Campaign() {
+    }
 
     public Campaign(Long id, String name, String referral, List<Platform> platforms, Long adClicks, Date created) {
         this.id = id;
@@ -29,6 +35,7 @@ public class Campaign {
         this.adClicks = adClicks;
         this.created = created;
     }
+
     public Campaign(Long id, String name, String referral, List<Platform> platforms, Date created) {
         this.id = id;
         this.name = name;
@@ -37,8 +44,36 @@ public class Campaign {
         this.created = created;
     }
 
+    public Campaign(Entity entity, Boolean countClicks) {
+        this.id = (entity.getKey().getId());
+        this.name = (String) entity.getProperty("name");
+        this.referral = (String) entity.getProperty("referral");
+        this.created = (Date) entity.getProperty("created");
+        CampaignDao dao = new DatabaseDao();
+        List<String> platformStringList = (List<String>) entity.getProperty("platforms");
+        this.platforms = Platform.stringListToEnumList(platformStringList);
+        try {
+            if (countClicks) {
+                this.adClicks = dao.countClicks(entity.getKey().getId());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Platform> stringListToEnumList(List<String> platforms) {
+        if (platforms == null) {
+            return null;
+        }
+        List<Platform> enumList = new ArrayList<>();
+        for (String platform : platforms) {
+            enumList.add(Platform.fromString(platform));
+        }
+        return enumList;
+    }
+
     public String toString() {
-        return "\nid: " + id + "\ncampaign name: " + name + "\nreferral: " + referral + "\nplatforms: " +  platforms + "\nadClicks: " + adClicks + "\ncreated: " + created;
+        return "\nid: " + id + "\ncampaign name: " + name + "\nreferral: " + referral + "\nplatforms: " + platforms + "\nadClicks: " + adClicks + "\ncreated: " + created;
     }
 
     public Long getId() {

@@ -61,7 +61,7 @@ public class DatabaseDao implements CampaignDao {
         Entity result = pq.asSingleEntity();
         Campaign campaign = null;
         if (result != null) {
-            campaign = entityToCampaign(result, countClicks);
+            campaign = new Campaign(result, countClicks);
         }
         return campaign;
     }
@@ -118,27 +118,11 @@ public class DatabaseDao implements CampaignDao {
         if (!platforms.isEmpty()) {
             q.setFilter(new Query.FilterPredicate("platforms", Query.FilterOperator.IN, Platform.enumListToStringList(platforms)));
         }
-
         PreparedQuery pq = datastore.prepare(q);
         List<Campaign> campaigns = new ArrayList<>();
         for (Entity result : pq.asIterable()) {
-            campaigns.add(entityToCampaign(result, true));
+            campaigns.add(new Campaign(result, true));
         }
         return campaigns;
     }
-    // Convert entity object to campaign
-    private Campaign entityToCampaign(Entity entity, Boolean countClicks) throws SQLException {
-        Campaign campaign = new Campaign();
-        campaign.setId(entity.getKey().getId());
-        campaign.setName((String) entity.getProperty("name"));
-        campaign.setReferral((String) entity.getProperty("referral"));
-        List<String> platformStringList = (List<String>) entity.getProperty("platforms");
-        campaign.setPlatforms(Platform.stringListToEnumList(platformStringList));
-        campaign.setCreated((Date) entity.getProperty("created"));
-        if (countClicks) {
-            campaign.setAdClicks(dao.countClicks(entity.getKey().getId()));
-        }
-        return campaign;
-    }
-
 }
