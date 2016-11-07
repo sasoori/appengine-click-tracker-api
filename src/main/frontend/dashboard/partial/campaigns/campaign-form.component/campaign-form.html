@@ -1,0 +1,43 @@
+<div class="campaign-form">
+    <form name="addCampaignForm" novalidate ng-submit="addCampaignForm.$valid && addCampaign()" class="ui form">
+        <div class="filed-container">
+            <div class="field">
+                <span class="field-title">Campaign name <span class="cms-red">*</span></span>
+                <div class="field-value">
+                    <input type="text" name="title" ng-model="campaign.name" required>
+                </div>
+            </div>
+            <div class="field">
+                <span class="field-title">Referral <span class="cms-red">*</span></span>
+                <div class="field-value">
+                    <input type="text" name="author" ng-model="campaign.referral" required>
+                </div>
+            </div>
+            <div class="field">
+                <span class="field-title">Active on selected platforms <span class="cms-red">*</span></span>
+                <div class="inline fields">
+                    <div class="field" ng-repeat="platform in platformTypes">
+                        <div class="ui checkbox">
+                            <div class="field-value">
+                                <input type="checkbox" id="{{platform.name}}" ng-model="platform.checked" ng-change="vm.onFilterToggle()">
+                                <label for="{{platform.name}}" ng-bind="platform.name"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="description required error no-margin"
+                          ng-if="addCampaignForm.$submitted && addCampaignForm.radioType.$error.required">
+                            Required.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="submit-button">
+            <a ui-sref="campaigns">
+                <button class="ui basic button">Cancel</button>
+            </a>
+            <button id="submit-project" type="submit" class="ui icon button">
+                Save
+            </button>
+        </div>
+    </form>
+</div>

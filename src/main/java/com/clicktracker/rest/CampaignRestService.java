@@ -54,15 +54,14 @@ public class CampaignRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCampaign(
-            @QueryParam(RequestParams.CAMPAIGN_NAME) String name,
-            @QueryParam(RequestParams.REFERRAL) String referral,
-            @QueryParam(RequestParams.PLATFORMS) List<Platform> platforms
+           String campaignJson
     ) throws Exception {
-        Long campaignId = dao.createCampaign(name, referral, platforms);
+        Campaign campaign = mapper.readValue(campaignJson, Campaign.class);
+        Long campaignId = dao.createCampaign(campaign.getName(), campaign.getReferral(), campaign.getPlatforms());
         if (campaignId == null) {
             return Response.status(Response.Status.BAD_REQUEST).type("text/plain").entity("Failed to save campaign").build();
         }
-        return Response.status(200).entity(campaignId).build();
+     return Response.status(200).type("text/plain").entity(campaignId).build();
     }
     // GET CAMPAIGN
     @GET
@@ -104,13 +103,15 @@ public class CampaignRestService {
     }
     // DELETE CAMPAIGN
     @DELETE
-    @Path("/campaigns/{id}")
+    @Path("/campaigns")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCampaign(
-            @PathParam(RequestParams.CAMPAIGN_ID) Long campaignId
+            @QueryParam(RequestParams.CAMPAIGN_ID) List<Long> campaignIds
     ) throws Exception {
         // Delete campaign by id
-        dao.deleteCampaign(campaignId);
+        for (Long campaignId : campaignIds) {
+            dao.deleteCampaign(campaignId);
+        }
         return Response.status(Response.Status.OK).build();
     }
     // GET CAMPAIGNS

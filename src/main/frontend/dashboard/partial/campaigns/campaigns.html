@@ -1,0 +1,73 @@
+<div class="col-md-12 my-container">
+    <div class="toolbar-buttons">
+        <a ui-sref="campaigns.add-campaign">
+            <button id="submit-project" type="submit" class="ui icon button">
+                Add
+            </button>
+        </a>
+        <button ng-click="onRemoveClick()" class="ui basic button">Delete</button>
+    </div>
+    <table class="ui very basic table selectable single line">
+        <thead>
+        <tr>
+            <th>
+                <label class="checkbox-label" for="select-all">
+                    <input id="select-all" class="check-campaign" ng-click="onSelectAll()" ng-model="selectAll" type="checkbox">
+                </label>ID
+            </th>
+            <th>Name</th>
+            <th>Clicks</th>
+            <th>Platforms</th>
+            <th>Referral</th>
+            <th>Started</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="campaign in campaigns track by $index">
+            <td>
+                <label class="checkbox-label" for="{{campaign.id}}">
+                    <input id="{{campaign.id}}" class="check-campaign"
+                           ng-model="campaign.selected" type="checkbox"></label>
+                <a ng-click="onOpenCampaign(campaign)"><b>
+                    <span ng-bind="campaign.id"></span>
+                </b></a>
+            </td>
+            <td>
+                <div class="ui label">
+                    <span ng-bind="campaign.name"></span>
+                </div>
+            </td>
+            <td>
+                <div class="ui label">
+                    <i class="eye icon"></i><span ng-bind="campaign.adClicks"></span>
+                </div>
+            </td>
+            <td>
+                <div class="ui label" ng-repeat="platform in campaign.platforms">
+                    <span ng-bind="platform"></span>
+                </div>
+            </td>
+            <td>
+                <div class="ui label">
+                    <i class="tag icon"></i><span ng-bind="campaign.referral"></span>
+                </div>
+            </td>
+            <td>
+                <div class="ui label">
+                    <span> {{campaign.create | dateMomentUtc}}</span>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th>Total <b>{{campaigns.length}}</b> campaigns</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
